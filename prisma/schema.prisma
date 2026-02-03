@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  emailVerified Boolean         @default(false)
+  name          String?
+  image         String?
+  role          UserRole        @default(REGISTERED)
+  packageType   PackageType     @default(FREE)
+  packageId     String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      Account[]
+  auditLogs     AuditLog[]
+  photos        Photo[]
+  sessions      Session[]
+  usageTracking UsageTracking[]
+  package       Package?        @relation(fields: [packageId], references: [id])
+
+  @@index([email])
+  @@index([packageType])
+  @@map("users")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  scope                 String?
+  accessToken           String?
+  accessTokenExpiresAt  DateTime?
+  accountId             String    @unique
+  createdAt             DateTime  @default(now())
+  idToken               String?
+  password              String?
+  providerId            String
+  refreshToken          String?
+  refreshTokenExpiresAt DateTime?
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  ipAddress String?
+  token     String   @unique
+  updatedAt DateTime @updatedAt
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Photo {
+  id                String         @id @default(cuid())
+  userId            String
+  originalName      String
+  storagePath       String
+  thumbnailPath     String
+  mimeType          String
+  format            String
+  sizeBytes         Int
+  width             Int
+  height            Int
+  title             String?
+  description       String?
+  processingOptions Json?
+  viewCount         Int            @default(0)
+  downloadCount     Int            @default(0)
+  uploadedAt        DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  hashtags          PhotoHashtag[]
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([uploadedAt(sort: Desc)])
+  @@map("photos")
+}
+
+model Hashtag {
+  id        String         @id @default(cuid())
+  name      String         @unique
+  createdAt DateTime       @default(now())
+  photos    PhotoHashtag[]
+
+  @@index([name])
+  @@map("hashtags")
+}
+
+model PhotoHashtag {
+  photoId   String
+  hashtagId String
+  hashtag   Hashtag @relation(fields: [hashtagId], references: [id], onDelete: Cascade)
+  photo     Photo   @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@id([photoId, hashtagId])
+  @@map("photo_hashtags")
+}
+
+model Package {
+  id                    String      @id @default(cuid())
+  type                  PackageType @unique
+  name                  String
+  maxPhotosPerMonth     Int
+  maxPhotoSizeMB        Int
+  maxStorageGB          Int
+  canDownloadOriginal   Boolean
+  canApplyFilters       Boolean
+  maxFiltersPerDownload Int
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  users                 User[]
+
+  @@map("packages")
+}
+
+model UsageTracking {
+  id             String   @id @default(cuid())
+  userId         String
+  month          Int
+  year           Int
+  photosUploaded Int      @default(0)
+  storageUsedMB  Int      @default(0)
+  downloads      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, month, year])
+  @@index([userId])
+  @@map("usage_tracking")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  userEmail  String?
+  userRole   UserRole
+  timestamp  DateTime @default(now())
+  action     String
+  resource   String?
+  resourceId String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  success    Boolean  @default(true)
+  errorMsg   String?
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([timestamp(sort: Desc)])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+enum UserRole {
+  ANONYMOUS
+  REGISTERED
+  ADMINISTRATOR
+}
+
+enum PackageType {
+  FREE
+  PRO
+  GOLD
+}

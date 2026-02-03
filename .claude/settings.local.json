@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(docker exec:*)"
+    ]
+  }
+}

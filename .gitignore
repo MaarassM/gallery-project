@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+/build/
+/dist/
+/.react-router/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Storage
+/storage/originals/*
+/storage/thumbnails/*
+/storage/processed/*
+!storage/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+/coverage/
+
+# Misc
+.turbo
+.vercel

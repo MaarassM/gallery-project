@@ -1,0 +1,16 @@
+/* Global styles for Photo Gallery */
+
+/* Prevent layout shift when scrollbar appears/disappears */
+html {
+  overflow-y: scroll;
+}
+
+/* Ensure consistent content width across all pages */
+body {
+  min-height: 100vh;
+}
+
+/* Smooth transitions between pages */
+.mantine-AppShell-main {
+  transition: none;
+}
