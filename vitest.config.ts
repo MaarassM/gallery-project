@@ -22,5 +22,8 @@ export default defineConfig({
       "tests/unit/**/*.test.tsx",
       "tests/integration/**/*.test.ts",
     ],
+    benchmark: {
+      include: ["benchmarks/**/*.bench.ts"],
+    },
   },
 });
