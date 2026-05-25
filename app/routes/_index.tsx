@@ -234,37 +234,40 @@ export default function Index() {
   };
 
   return (
-    <Container size="xl" py="xl">
+    <Container size="xl" py="xl" style={{ position: "relative", zIndex: 1 }}>
       <Stack gap="lg">
         {/* Header */}
-        <div>
-          <Title order={1}>Photo Gallery</Title>
-        </div>
+        <Stack gap={4} mb="sm">
+          <Title order={1} className="gradient-text" style={{ fontSize: 36, fontWeight: 800 }}>
+            Photo Gallery
+          </Title>
+          <Text c="dimmed" size="sm">
+            {photos.length} photo{photos.length !== 1 ? "s" : ""} in your collection
+          </Text>
+        </Stack>
 
         {/* Navigation Tabs */}
         <Tabs value={activeTab} onChange={setActiveTab}>
           <Tabs.List>
-            <Tabs.Tab value="browse" leftSection={<FiHome size={16} />}>
-              Browse Photos
+            <Tabs.Tab value="browse" leftSection={<FiHome size={15} />}>
+              Browse
             </Tabs.Tab>
-            <Tabs.Tab value="upload" leftSection={<FiUpload size={16} />}>
-              Upload Photo
+            <Tabs.Tab value="upload" leftSection={<FiUpload size={15} />}>
+              Upload
             </Tabs.Tab>
-            <Tabs.Tab value="search" leftSection={<FiSearch size={16} />}>
-              Search & Filter
+            <Tabs.Tab value="search" leftSection={<FiSearch size={15} />}>
+              Search
             </Tabs.Tab>
           </Tabs.List>
 
           {/* Browse Tab */}
           <Tabs.Panel value="browse" pt="lg">
             <Stack gap="md">
-              <Group justify="space-between">
-                <Text size="lg" fw={600}>
-                  Latest Photos ({photos.length})
-                </Text>
+              <Group justify="flex-end">
                 <Button
-                  variant="light"
-                  size="sm"
+                  variant="subtle"
+                  color="violet"
+                  size="xs"
                   onClick={() => revalidator.revalidate()}
                 >
                   Refresh
@@ -283,8 +286,8 @@ export default function Index() {
           {/* Upload Tab */}
           <Tabs.Panel value="upload" pt="lg">
             <Stack gap="md">
-              <Text size="lg" fw={600}>
-                Upload New Photo
+              <Text size="sm" c="dimmed">
+                Upload a new photo to your gallery
               </Text>
               <PhotoUploader onSuccess={handleUploadSuccess} />
             </Stack>

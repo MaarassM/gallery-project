@@ -1,16 +1,171 @@
-/* Global styles for Photo Gallery */
+/* Global styles for Photo Gallery — dark glassmorphism theme */
 
-/* Prevent layout shift when scrollbar appears/disappears */
 html {
   overflow-y: scroll;
 }
 
-/* Ensure consistent content width across all pages */
 body {
   min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background-attachment: fixed;
 }
 
-/* Smooth transitions between pages */
+/* Ambient gradient orbs */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::before {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #7c3aed, #4f46e5);
+  top: -100px;
+  right: -100px;
+  animation: float 18s ease-in-out infinite alternate;
+}
+
+body::after {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #06b6d4, #3b82f6);
+  bottom: -100px;
+  left: -100px;
+  animation: float 22s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 40px) scale(1.1); }
+}
+
+/* Glass card utility */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+/* AppShell overrides — transparent background to show gradient */
+.mantine-AppShell-root {
+  background: transparent !important;
+}
+
 .mantine-AppShell-main {
-  transition: none;
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+
+.mantine-AppShell-header {
+  background: rgba(15, 12, 41, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Photo masonry grid */
+.photo-masonry {
+  column-count: 4;
+  column-gap: 16px;
+}
+
+.photo-masonry-item {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1200px) {
+  .photo-masonry { column-count: 3; }
+}
+
+@media (max-width: 768px) {
+  .photo-masonry { column-count: 2; }
+}
+
+@media (max-width: 480px) {
+  .photo-masonry { column-count: 1; }
+}
+
+/* Photo card */
+.photo-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.photo-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(124, 58, 237, 0.3);
+}
+
+.photo-card img {
+  width: 100%;
+  display: block;
+  transition: filter 0.25s ease;
+}
+
+.photo-card:hover img {
+  filter: brightness(0.65);
+}
+
+.photo-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+}
+
+.photo-card:hover .photo-card-overlay {
+  transform: translateY(0);
+}
+
+/* Glassmorphism tabs */
+.mantine-Tabs-list {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 4px !important;
+  gap: 4px !important;
+}
+
+.mantine-Tabs-tab {
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.2s ease !important;
+}
+
+.mantine-Tabs-tab:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.mantine-Tabs-tab[data-active] {
+  background: rgba(124, 58, 237, 0.4) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+/* Gradient heading text */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
