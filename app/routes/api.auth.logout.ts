@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
 import { deleteSession, getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 export async function action({ request }: ActionFunctionArgs) {
   try {
@@ -18,7 +18,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }
 
     // Log logout action
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email,
       userRole: (user as any).role || "REGISTERED",
