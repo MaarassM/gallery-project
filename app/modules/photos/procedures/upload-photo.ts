@@ -5,6 +5,7 @@ import { imageProcessingService } from "~/modules/images/services/image-processi
 import { PackageService } from "~/modules/packages/services/package-service";
 import { auditService } from "~/modules/audit/services/audit-service";
 import { parseHashtags } from "../utils/hashtag-parser";
+import { photosUploadedTotal } from "~/lib/metrics/metrics";
 
 // Fix: use instance (was incorrectly called as static — runtime bug)
 const photoRepository = new PhotoRepository();
@@ -98,6 +99,9 @@ export const uploadPhoto = authedProcedure
 
       // 7. Track usage
       await PackageService.trackUpload(user.id, processed.metadata.size);
+
+      // 8. Increment metrics counter
+      photosUploadedTotal.inc({ package_type: userPackage.type ?? "unknown" });
 
       // 8. Audit log
       await auditService.log({
