@@ -50,7 +50,7 @@ export class ImageProcessingService {
         pipeline.withResize(
           options.resize.width,
           options.resize.height,
-          options.resize.fit,
+          options.resize.fit as "cover" | "contain" | undefined,
         );
       }
 
