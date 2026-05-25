@@ -2,7 +2,7 @@ import type { ActionFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 import { prisma } from "~/lib/db/client";
 import { createSession } from "~/lib/auth/simple-auth";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import { PackageType, UserRole } from "@prisma/client";
 
 /**
@@ -92,7 +92,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     // Log successful registration
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email,
       userRole: user.role,

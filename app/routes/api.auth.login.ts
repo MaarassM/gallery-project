@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
 import { prisma } from "~/lib/db/client";
 import { createSession } from "~/lib/auth/simple-auth";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 export async function action({ request }: ActionFunctionArgs) {
   console.log("=== LOGIN ACTION ===");
@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     if (!account) {
-      await AuditService.log({
+      await auditService.log({
         userEmail: email,
         userRole: "ANONYMOUS",
         action: "LOGIN_FAILED",
@@ -48,7 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const isValid = await bcrypt.compare(password, account.password || "");
 
     if (!isValid) {
-      await AuditService.log({
+      await auditService.log({
         userEmail: email,
         userRole: "ANONYMOUS",
         action: "LOGIN_FAILED",
@@ -66,7 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
     // Create session
     const sessionToken = await createSession(account.user.id);
 
-    await AuditService.log({
+    await auditService.log({
       userId: account.user.id,
       userEmail: account.user.email,
       userRole: account.user.role,
