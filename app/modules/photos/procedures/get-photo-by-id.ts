@@ -1,7 +1,7 @@
 import { publicProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { PhotoRepository } from "../repositories/photo-repository";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 // Validation schema for getting photo by ID
 const getPhotoByIdSchema = v.object({
@@ -24,7 +24,7 @@ export const getPhotoById = publicProcedure
 
     // Log view action (anonymous or authenticated)
     const user = context.user || null;
-    await AuditService.log({
+    await auditService.log({
       userId: user?.id,
       userEmail: user?.email,
       userRole: user?.role || "ANONYMOUS",

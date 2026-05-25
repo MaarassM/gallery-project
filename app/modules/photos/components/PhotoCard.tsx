@@ -1,5 +1,5 @@
-import { Card, Image, Text, Badge, Group, Stack, Avatar, ActionIcon } from "@mantine/core";
-import { FiEye, FiDownload, FiCalendar, FiTrash2 } from "react-icons/fi";
+import { Text, Badge, Group, ActionIcon } from "@mantine/core";
+import { FiEye, FiDownload, FiTrash2 } from "react-icons/fi";
 import type { PhotoGridItem } from "./PhotoGrid";
 
 interface PhotoCardProps {
@@ -10,129 +10,75 @@ interface PhotoCardProps {
 }
 
 export function PhotoCard({ photo, onClick, isAdmin, onDelete }: PhotoCardProps) {
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   const formatSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
-    <Card
-      shadow="sm"
-      padding="lg"
-      radius="md"
-      withBorder
-      style={{ cursor: "pointer", transition: "transform 0.2s" }}
-      onClick={onClick}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-      }}
-    >
-      <Card.Section pos="relative">
-        <Image
-          src={`/storage/${photo.thumbnailPath}`}
-          height={200}
-          alt={photo.title || "Photo"}
-          fit="cover"
-        />
-        {isAdmin && onDelete && (
-          <ActionIcon
-            color="red"
-            variant="filled"
-            size="sm"
-            pos="absolute"
-            top={8}
-            right={8}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(photo.id);
-            }}
-            title="Delete photo"
-          >
-            <FiTrash2 size={14} />
-          </ActionIcon>
-        )}
-      </Card.Section>
+    <div className="photo-card" onClick={onClick}>
+      <img
+        src={`/storage/${photo.thumbnailPath}`}
+        alt={photo.title || "Photo"}
+        loading="lazy"
+        style={{ minHeight: 120 }}
+      />
 
-      <Stack gap="xs" mt="md">
-        {/* Title */}
-        <Text fw={600} lineClamp={1}>
+      {/* Admin delete button — always visible */}
+      {isAdmin && onDelete && (
+        <ActionIcon
+          color="red"
+          variant="filled"
+          size="sm"
+          style={{ position: "absolute", top: 8, right: 8, zIndex: 2 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(photo.id);
+          }}
+        >
+          <FiTrash2 size={13} />
+        </ActionIcon>
+      )}
+
+      {/* Hover overlay */}
+      <div className="photo-card-overlay">
+        <Text fw={600} size="sm" c="white" lineClamp={1} mb={4}>
           {photo.title || "Untitled"}
         </Text>
 
-        {/* Description */}
-        {photo.description && (
-          <Text size="sm" c="dimmed" lineClamp={2}>
-            {photo.description}
-          </Text>
-        )}
-
-        {/* Hashtags */}
         {photo.hashtags.length > 0 && (
-          <Group gap="xs">
+          <Group gap={4} mb={6}>
             {photo.hashtags.slice(0, 3).map((tag) => (
-              <Badge key={tag} size="sm" variant="light">
+              <Badge
+                key={tag}
+                size="xs"
+                variant="filled"
+                color="violet"
+                style={{ opacity: 0.85 }}
+              >
                 #{tag}
               </Badge>
             ))}
             {photo.hashtags.length > 3 && (
-              <Text size="xs" c="dimmed">
-                +{photo.hashtags.length - 3}
-              </Text>
+              <Text size="xs" c="dimmed">+{photo.hashtags.length - 3}</Text>
             )}
           </Group>
         )}
 
-        {/* Author */}
-        <Group gap="xs">
-          <Avatar size="sm" radius="xl" color="blue">
-            {photo.author.name?.[0] || photo.author.email?.[0] || "?"}
-          </Avatar>
-          <Text size="sm" c="dimmed">
-            {photo.author.name || photo.author.email || "Anonymous"}
-          </Text>
-        </Group>
-
-        {/* Stats */}
         <Group justify="space-between">
-          <Group gap="xs">
-            <Group gap={4}>
-              <FiEye size={14} />
-              <Text size="xs" c="dimmed">
-                {photo.viewCount}
-              </Text>
+          <Group gap={8}>
+            <Group gap={3}>
+              <FiEye size={12} color="rgba(255,255,255,0.7)" />
+              <Text size="xs" c="dimmed">{photo.viewCount}</Text>
             </Group>
-            <Group gap={4}>
-              <FiDownload size={14} />
-              <Text size="xs" c="dimmed">
-                {photo.downloadCount}
-              </Text>
+            <Group gap={3}>
+              <FiDownload size={12} color="rgba(255,255,255,0.7)" />
+              <Text size="xs" c="dimmed">{photo.downloadCount}</Text>
             </Group>
           </Group>
-          <Text size="xs" c="dimmed">
-            {formatSize(photo.sizeBytes)}
-          </Text>
+          <Text size="xs" c="dimmed">{formatSize(photo.sizeBytes)}</Text>
         </Group>
-
-        {/* Date */}
-        <Group gap={4}>
-          <FiCalendar size={12} />
-          <Text size="xs" c="dimmed">
-            {formatDate(photo.uploadedAt)}
-          </Text>
-        </Group>
-      </Stack>
-    </Card>
+      </div>
+    </div>
   );
 }

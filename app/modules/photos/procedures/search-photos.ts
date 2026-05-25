@@ -1,8 +1,16 @@
+// FP REFACTOR #5: Replace inline 12-field .map() block with pure mapPhotoToDto HOF.
+//
+// BEFORE: 28 lines of inline photo.id, photo.title, ... photo.uploadedAt mapping
+//   duplicated in every procedure that returns photos.
+//
+// AFTER: toPagedResponse(photos, mapPhotoToDto, meta) — single call, no repetition.
+//   mapPhotoToDto is a pure function: easily tested, reused in get-photos.ts too.
+
 import { publicProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { PhotoRepository } from "../repositories/photo-repository";
+import { mapPhotoToDto, toPagedResponse } from "../utils/photo-mappers";
 
-// Validation schema for search
 const searchPhotosSchema = v.object({
   hashtags: v.optional(v.array(v.string())),
   minSize: v.optional(v.number()),
@@ -26,31 +34,11 @@ export const searchPhotos = publicProcedure
       dateFrom: input.dateFrom ? new Date(input.dateFrom) : undefined,
       dateTo: input.dateTo ? new Date(input.dateTo) : undefined,
       authorId: input.authorId,
-      limit: input.limit || 50,
-      offset: input.offset || 0,
+      limit: input.limit ?? 50,
+      offset: input.offset ?? 0,
     });
 
-    return {
-      success: true,
-      photos: photos.map((photo) => ({
-        id: photo.id,
-        title: photo.title,
-        description: photo.description,
-        thumbnailPath: photo.thumbnailPath,
-        width: photo.width,
-        height: photo.height,
-        sizeBytes: photo.sizeBytes,
-        hashtags: photo.hashtags.map((pt) => pt.hashtag.name),
-        author: {
-          id: photo.user.id,
-          name: photo.user.name,
-          email: photo.user.email,
-        },
-        viewCount: photo.viewCount,
-        downloadCount: photo.downloadCount,
-        uploadedAt: photo.uploadedAt,
-      })),
-      total: photos.length,
+    return toPagedResponse(photos as never, mapPhotoToDto, {
       criteria: {
         hashtags: input.hashtags,
         minSize: input.minSize,
@@ -59,5 +47,5 @@ export const searchPhotos = publicProcedure
         dateTo: input.dateTo,
         authorId: input.authorId,
       },
-    };
+    });
   });

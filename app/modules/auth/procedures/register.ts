@@ -2,7 +2,7 @@ import { publicProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { auth } from "~/lib/auth/config";
 import { prisma } from "~/lib/db/client";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import type { PackageType } from "@prisma/client";
 
 const registerSchema = v.object({
@@ -63,7 +63,7 @@ export const register = publicProcedure
       });
 
       // Audit log
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email,
         userRole: user.role,
@@ -90,7 +90,7 @@ export const register = publicProcedure
       };
     } catch (error) {
       // Audit log failure
-      await AuditService.log({
+      await auditService.log({
         userId: undefined,
         userEmail: input.email,
         userRole: "ANONYMOUS",

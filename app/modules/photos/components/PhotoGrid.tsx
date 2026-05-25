@@ -1,4 +1,5 @@
-import { SimpleGrid, Container, Text, Stack, Loader, Center } from "@mantine/core";
+import { Text, Stack, Loader, Center, Box } from "@mantine/core";
+import { FiCamera } from "react-icons/fi";
 import { PhotoCard } from "./PhotoCard";
 
 export interface PhotoGridItem {
@@ -33,7 +34,7 @@ export function PhotoGrid({ photos, loading = false, onPhotoClick, isAdmin, onDe
     return (
       <Center py="xl">
         <Stack align="center" gap="md">
-          <Loader size="lg" />
+          <Loader size="lg" color="violet" />
           <Text c="dimmed">Loading photos...</Text>
         </Stack>
       </Center>
@@ -42,36 +43,41 @@ export function PhotoGrid({ photos, loading = false, onPhotoClick, isAdmin, onDe
 
   if (photos.length === 0) {
     return (
-      <Center py="xl">
+      <Center py={60}>
         <Stack align="center" gap="sm">
-          <Text size="xl" c="dimmed">
-            No photos found
-          </Text>
-          <Text size="sm" c="dimmed">
-            Upload your first photo to get started!
-          </Text>
+          <Box
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 16,
+              background: "rgba(124, 58, 237, 0.15)",
+              border: "1px solid rgba(124, 58, 237, 0.3)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FiCamera size={28} color="#a78bfa" />
+          </Box>
+          <Text size="lg" c="dimmed" fw={500}>No photos yet</Text>
+          <Text size="sm" c="dimmed">Upload your first photo to get started</Text>
         </Stack>
       </Center>
     );
   }
 
   return (
-    <Container size="xl" py="md">
-      <SimpleGrid
-        cols={{ base: 1, xs: 2, sm: 2, md: 3, lg: 4 }}
-        spacing="lg"
-        verticalSpacing="lg"
-      >
-        {photos.map((photo) => (
+    <div className="photo-masonry">
+      {photos.map((photo) => (
+        <div key={photo.id} className="photo-masonry-item">
           <PhotoCard
-            key={photo.id}
             photo={photo}
             onClick={() => onPhotoClick?.(photo.id)}
             isAdmin={isAdmin}
             onDelete={onDeletePhoto}
           />
-        ))}
-      </SimpleGrid>
-    </Container>
+        </div>
+      ))}
+    </div>
   );
 }

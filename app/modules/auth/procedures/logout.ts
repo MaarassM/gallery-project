@@ -1,6 +1,6 @@
 import { authedProcedure } from "~/lib/orpc/middleware";
 import { auth } from "~/lib/auth/config";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 export const logout = authedProcedure.handler(async ({ context }) => {
   const { user } = context;
@@ -11,7 +11,7 @@ export const logout = authedProcedure.handler(async ({ context }) => {
     });
 
     // Audit log
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email || undefined,
       userRole: user.role,
@@ -30,7 +30,7 @@ export const logout = authedProcedure.handler(async ({ context }) => {
     };
   } catch (error) {
     // Audit log failure
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email || undefined,
       userRole: user.role,

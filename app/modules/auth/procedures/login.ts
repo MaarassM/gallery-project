@@ -1,7 +1,7 @@
 import { publicProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { auth } from "~/lib/auth/config";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 const loginSchema = v.object({
   email: v.pipe(v.string(), v.email("Invalid email address")),
@@ -25,7 +25,7 @@ export const login = publicProcedure
       }
 
       // Audit log
-      await AuditService.log({
+      await auditService.log({
         userId: session.user.id,
         userEmail: session.user.email,
         userRole: session.user.role,
@@ -55,7 +55,7 @@ export const login = publicProcedure
       };
     } catch (error) {
       // Audit log failure
-      await AuditService.log({
+      await auditService.log({
         userId: undefined,
         userEmail: input.email,
         userRole: "ANONYMOUS",

@@ -1,7 +1,7 @@
 import { adminProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { prisma } from "~/lib/db/client";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import type { UserRole, PackageType } from "@prisma/client";
 
 // Validation schema for updating user
@@ -71,7 +71,7 @@ export const updateUser = adminProcedure
       });
 
       // Audit log
-      await AuditService.log({
+      await auditService.log({
         userId: admin.id,
         userEmail: admin.email || undefined,
         userRole: admin.role,
@@ -100,7 +100,7 @@ export const updateUser = adminProcedure
       };
     } catch (error) {
       // Audit log failure
-      await AuditService.log({
+      await auditService.log({
         userId: admin.id,
         userEmail: admin.email || undefined,
         userRole: admin.role,
