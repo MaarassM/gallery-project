@@ -4,6 +4,7 @@ import { LocalStorageStrategy } from "../strategies/local-storage-strategy";
 import type { StorageStrategy } from "../strategies/storage-strategy.interface";
 import type { ProcessingOptions } from "../processors/image-processor.interface";
 import { Log, Perf } from "~/aspects";
+import { activeImageProcessing } from "~/lib/metrics/metrics";
 
 export type ProcessUploadOptions = ProcessingOptions;
 
@@ -37,6 +38,8 @@ export class ImageProcessingService {
     originalFilename: string,
     options?: ProcessUploadOptions,
   ): Promise<ProcessUploadResult> {
+    activeImageProcessing.inc();
+    try {
     const initialMetadata = await sharp(fileBuffer).metadata();
 
     let processedBuffer = fileBuffer;
@@ -89,6 +92,9 @@ export class ImageProcessingService {
         size: processedBuffer.length,
       },
     };
+    } finally {
+      activeImageProcessing.dec();
+    }
   }
 
   @Log("imageProcessingService.processDownload")

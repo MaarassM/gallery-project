@@ -25,6 +25,9 @@ export default [
   route("api/admin/statistics", "routes/api.admin.statistics.ts"),
   route("api/admin/audit-logs", "routes/api.admin.audit-logs.ts"),
 
+  // Observability
+  route("api/metrics", "routes/api/metrics.ts"),
+
   // Storage - serve uploaded images
   route("storage/*", "routes/storage.$.ts"),
 ] satisfies RouteConfig;
