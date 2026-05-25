@@ -1,5 +1,6 @@
 import { prisma } from "~/lib/db/client";
 import type { Photo, Prisma } from "@prisma/client";
+import { Log, Cache } from "~/aspects";
 
 // REPOSITORY PATTERN: Enkapsulira sve operacije nad bazom podataka za Photo entitet.
 // Pruža interface sličan kolekciji (create, findById, findMany, search, update, delete).
@@ -88,6 +89,8 @@ export class PhotoRepository {
     });
   }
 
+  @Log()
+  @Cache(30_000)
   async search(criteria: SearchCriteria): Promise<Photo[]> {
     const where: Prisma.PhotoWhereInput = {};
 

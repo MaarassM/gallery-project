@@ -1,10 +1,13 @@
 import { authedProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { PhotoRepository } from "../repositories/photo-repository";
-import { ImageProcessingService } from "~/modules/images/services/image-processing-service";
+import { imageProcessingService } from "~/modules/images/services/image-processing-service";
 import { PackageService } from "~/modules/packages/services/package-service";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import { parseHashtags } from "../utils/hashtag-parser";
+
+// Fix: use instance (was incorrectly called as static — runtime bug)
+const photoRepository = new PhotoRepository();
 
 // Validation schema for photo upload
 const uploadPhotoSchema = v.object({
@@ -67,7 +70,7 @@ export const uploadPhoto = authedProcedure
       const buffer = Buffer.from(await file.arrayBuffer());
 
       // 4. Process image (resize, convert format, generate thumbnail)
-      const processed = await ImageProcessingService.processUpload(
+      const processed = await imageProcessingService.processUpload(
         buffer,
         file.name,
         processingOptions
@@ -77,7 +80,7 @@ export const uploadPhoto = authedProcedure
       const hashtagArray = parseHashtags(hashtags);
 
       // 6. Save photo to database
-      const photo = await PhotoRepository.create({
+      const photo = await photoRepository.create({
         userId: user.id,
         originalName: file.name,
         storagePath: processed.storagePath,
@@ -97,7 +100,7 @@ export const uploadPhoto = authedProcedure
       await PackageService.trackUpload(user.id, processed.metadata.size);
 
       // 8. Audit log
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email || undefined,
         userRole: user.role,
@@ -124,7 +127,7 @@ export const uploadPhoto = authedProcedure
       };
     } catch (error) {
       // Audit log failure
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email || undefined,
         userRole: user.role,

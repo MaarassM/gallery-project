@@ -2,8 +2,8 @@ import { authedProcedure } from "~/lib/orpc/middleware";
 import * as v from "valibot";
 import { PhotoRepository } from "../repositories/photo-repository";
 import { PackageService } from "~/modules/packages/services/package-service";
-import { ImageProcessingService } from "~/modules/images/services/image-processing-service";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { imageProcessingService } from "~/modules/images/services/image-processing-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 // Validation schema for downloading processed photo
 const downloadProcessedSchema = v.object({
@@ -77,12 +77,12 @@ export const downloadProcessed = authedProcedure
       }
 
       // 5. Retrieve original file from storage
-      const originalBuffer = await ImageProcessingService.retrieve(
+      const originalBuffer = await imageProcessingService.retrieve(
         photo.storagePath
       );
 
       // 6. Process image with filters
-      const processed = await ImageProcessingService.processDownload(
+      const processed = await imageProcessingService.processDownload(
         originalBuffer,
         photo.originalName,
         input.processingOptions
@@ -95,7 +95,7 @@ export const downloadProcessed = authedProcedure
       await PackageService.trackDownload(user.id);
 
       // 9. Audit log
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email || undefined,
         userRole: user.role,
@@ -123,7 +123,7 @@ export const downloadProcessed = authedProcedure
       };
     } catch (error) {
       // Audit log failure
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email || undefined,
         userRole: user.role,
