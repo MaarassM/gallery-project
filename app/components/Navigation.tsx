@@ -1,5 +1,5 @@
-import { Group, Button, Container, Title } from "@mantine/core";
-import { FiHome, FiLogIn, FiLogOut, FiShield, FiUser } from "react-icons/fi";
+import { Group, Button, Container, Text, Badge } from "@mantine/core";
+import { FiHome, FiLogIn, FiLogOut, FiShield, FiCamera } from "react-icons/fi";
 import { Link } from "react-router";
 
 interface NavigationProps {
@@ -16,60 +16,70 @@ export function Navigation({ currentUser, onLogout }: NavigationProps) {
   const isAdmin = currentUser?.role === "ADMINISTRATOR";
 
   return (
-    <Container size="xl" py="md">
-      <Group justify="space-between">
-        {/* Logo / Title */}
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <Group gap="xs"></Group>
+    <Container size="xl" h="100%">
+      <Group justify="space-between" h="100%">
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <Group gap="xs">
+            <FiCamera size={22} color="#a78bfa" />
+            <Text fw={700} size="lg" style={{ color: "white", letterSpacing: "-0.3px" }}>
+              Gallery
+            </Text>
+          </Group>
         </Link>
 
-        {/* Navigation Links */}
-        <Group gap="md">
+        <Group gap="sm">
           <Button
             component={Link}
             to="/"
             variant="subtle"
-            leftSection={<FiHome size={16} />}
+            color="gray"
+            leftSection={<FiHome size={15} />}
+            size="sm"
           >
-            Home
+            Browse
           </Button>
 
           {isAdmin && (
             <Button
               component={Link}
               to="/admin"
-              variant="subtle"
-              leftSection={<FiShield size={16} />}
-              color="red"
+              variant="light"
+              color="violet"
+              leftSection={<FiShield size={15} />}
+              size="sm"
             >
-              Admin Panel
+              Admin
             </Button>
           )}
 
           {currentUser ? (
-            <>
-              <Button
-                variant="subtle"
-                leftSection={<FiUser size={16} />}
-                disabled
+            <Group gap="xs">
+              <Badge
+                variant="dot"
+                color="violet"
+                size="lg"
+                style={{ cursor: "default", fontWeight: 500, color: "rgba(255,255,255,0.7)" }}
               >
                 {currentUser.name || currentUser.email}
-              </Button>
+              </Badge>
               <Button
-                variant="light"
+                variant="subtle"
                 color="red"
-                leftSection={<FiLogOut size={16} />}
+                leftSection={<FiLogOut size={15} />}
+                size="sm"
                 onClick={onLogout}
               >
-                Logout
+                Sign out
               </Button>
-            </>
+            </Group>
           ) : (
             <Button
               component={Link}
               to="/auth"
-              variant="filled"
-              leftSection={<FiLogIn size={16} />}
+              variant="gradient"
+              gradient={{ from: "violet", to: "blue", deg: 135 }}
+              leftSection={<FiLogIn size={15} />}
+              size="sm"
             >
               Sign In
             </Button>

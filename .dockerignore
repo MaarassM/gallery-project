@@ -1,0 +1,16 @@
+node_modules
+.git
+.github
+.claude
+storage
+prisma/dev.db
+tests
+docs
+*.md
+.env
+.env.*
+!.env.example
+build
+.react-router
+test-results
+playwright-report

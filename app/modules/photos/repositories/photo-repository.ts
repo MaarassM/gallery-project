@@ -1,5 +1,7 @@
 import { prisma } from "~/lib/db/client";
 import type { Photo, Prisma } from "@prisma/client";
+import { Log, Cache } from "~/aspects";
+import { buildSearchWhere } from "../utils/search-criteria-builder";
 
 // REPOSITORY PATTERN: Enkapsulira sve operacije nad bazom podataka za Photo entitet.
 // Pruža interface sličan kolekciji (create, findById, findMany, search, update, delete).
@@ -88,39 +90,14 @@ export class PhotoRepository {
     });
   }
 
+  @Log()
+  @Cache(30_000)
   async search(criteria: SearchCriteria): Promise<Photo[]> {
-    const where: Prisma.PhotoWhereInput = {};
-
-    if (criteria.hashtags && criteria.hashtags.length > 0) {
-      where.hashtags = {
-        some: {
-          hashtag: {
-            name: { in: criteria.hashtags },
-          },
-        },
-      };
-    }
-
-    if (criteria.minSize !== undefined || criteria.maxSize !== undefined) {
-      where.sizeBytes = {};
-      if (criteria.minSize) where.sizeBytes.gte = criteria.minSize;
-      if (criteria.maxSize) where.sizeBytes.lte = criteria.maxSize;
-    }
-
-    if (criteria.dateFrom || criteria.dateTo) {
-      where.uploadedAt = {};
-      if (criteria.dateFrom) where.uploadedAt.gte = criteria.dateFrom;
-      if (criteria.dateTo) where.uploadedAt.lte = criteria.dateTo;
-    }
-
-    if (criteria.authorId) {
-      where.userId = criteria.authorId;
-    }
-
+    // FP: buildSearchWhere composes pure filter functions instead of imperative if/else
     return await prisma.photo.findMany({
-      where,
-      take: criteria.limit || 50,
-      skip: criteria.offset || 0,
+      where: buildSearchWhere(criteria),
+      take: criteria.limit ?? 50,
+      skip: criteria.offset ?? 0,
       orderBy: { uploadedAt: "desc" },
       include: {
         user: { select: { id: true, name: true, email: true } },

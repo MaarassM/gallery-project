@@ -1,6 +1,6 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData, redirect } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
-import { MantineProvider, ColorSchemeScript, AppShell } from "@mantine/core";
+import { MantineProvider, ColorSchemeScript, AppShell, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { Navigation } from "~/components/Navigation";
 import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
@@ -8,6 +8,37 @@ import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/dates/styles.css";
 import "~/styles/global.css";
+
+const theme = createTheme({
+  primaryColor: "violet",
+  defaultRadius: "md",
+  fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+  headings: { fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" },
+  colors: {
+    dark: [
+      "#C1C2C5", "#A6A7AB", "#909296", "#5C5F66",
+      "#373A40", "#2C2E33", "#25262B", "#1A1B1E", "#141517", "#101113",
+    ],
+  },
+  components: {
+    Paper: {
+      defaultProps: {
+        bg: "rgba(255,255,255,0.05)",
+        style: {
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.1)",
+        },
+      },
+    },
+    Button: {
+      defaultProps: { radius: "md" },
+    },
+    Input: {
+      defaultProps: { variant: "filled" },
+    },
+  },
+});
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -72,7 +103,7 @@ export default function Root() {
   };
 
   return (
-    <MantineProvider>
+    <MantineProvider theme={theme} defaultColorScheme="dark">
       <Notifications position="top-right" />
       <AppShell header={{ height: 70 }} padding="md">
         <AppShell.Header>
