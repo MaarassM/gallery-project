@@ -4,6 +4,7 @@ import { PhotoRepository } from "../repositories/photo-repository";
 import { ImageProcessingService } from "~/modules/images/services/image-processing-service";
 import { PackageService } from "~/modules/packages/services/package-service";
 import { AuditService } from "~/modules/audit/services/audit-service";
+import { parseHashtags } from "../utils/hashtag-parser";
 
 // Validation schema for photo upload
 const uploadPhotoSchema = v.object({
@@ -73,12 +74,7 @@ export const uploadPhoto = authedProcedure
       );
 
       // 5. Parse hashtags
-      const hashtagArray = hashtags
-        ? hashtags
-            .split(",")
-            .map((tag) => tag.trim().replace(/^#/, ""))
-            .filter((tag) => tag.length > 0 && tag.length <= 50)
-        : [];
+      const hashtagArray = parseHashtags(hashtags);
 
       // 6. Save photo to database
       const photo = await PhotoRepository.create({
