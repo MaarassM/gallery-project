@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { useSearchParams } from "react-router";
 import {
   Stack,
   TextInput,
@@ -37,119 +37,110 @@ const PACKAGES = [
   },
 ];
 
-export function RegisterForm({
-  onSuccess,
-  onSwitchToLogin,
-}: RegisterFormProps) {
+const ERROR_MESSAGES: Record<string, string> = {
+  "user-exists": "An account with that email already exists.",
+  "missing-fields": "Please fill in all required fields.",
+  "invalid-package": "Invalid package selection.",
+  "package-not-found": "Selected package is unavailable.",
+  "server-error": "Something went wrong. Please try again.",
+};
+
+export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [selectedPackage, setSelectedPackage] = useState("FREE");
-  const actionData = useActionData() as { error?: string } | undefined;
-  const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+  const [searchParams] = useSearchParams();
+  const errorKey = searchParams.get("error");
+  const errorMsg = errorKey ? (ERROR_MESSAGES[errorKey] ?? "Registration failed.") : null;
 
   const packageInfo = PACKAGES.find((pkg) => pkg.value === selectedPackage);
 
   return (
     <Stack gap="md">
-        <div>
-          <Text size="xl" fw={700}>
+      <div>
+        <Text size="xl" fw={700}>
+          Create Account
+        </Text>
+        <Text size="sm" c="dimmed">
+          Join our photo gallery community
+        </Text>
+      </div>
+
+      {errorMsg && (
+        <Alert icon={<FiAlertCircle size={16} />} color="red" variant="light">
+          {errorMsg}
+        </Alert>
+      )}
+
+      {/* Native form — ensures browser handles Set-Cookie on the redirect response */}
+      <form method="post" action="/api/auth/register">
+        {/* Hidden input carries the package type since Mantine Select is not a native element */}
+        <input type="hidden" name="packageType" value={selectedPackage} />
+        <Stack gap="md">
+          <TextInput
+            label="Full Name"
+            name="name"
+            placeholder="John Doe"
+            leftSection={<FiUser size={16} />}
+            required
+          />
+
+          <TextInput
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            leftSection={<FiMail size={16} />}
+            required
+          />
+
+          <PasswordInput
+            label="Password"
+            name="password"
+            placeholder="Create a strong password"
+            leftSection={<FiLock size={16} />}
+            required
+          />
+
+          <PasswordInput
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            leftSection={<FiLock size={16} />}
+          />
+
+          <Select
+            label="Choose Your Package"
+            placeholder="Select package"
+            value={selectedPackage}
+            onChange={(value) => setSelectedPackage(value || "FREE")}
+            leftSection={<FiPackage size={16} />}
+            data={PACKAGES.map((pkg) => ({ value: pkg.value, label: pkg.label }))}
+          />
+
+          {packageInfo && (
+            <Alert icon={<FiInfo size={14} />} color="blue" variant="light">
+              <Text size="sm" fw={500}>{packageInfo.label}</Text>
+              <Text size="xs" c="dimmed">{packageInfo.description}</Text>
+            </Alert>
+          )}
+
+          <Button
+            type="submit"
+            fullWidth
+            variant="gradient"
+            gradient={{ from: "violet", to: "blue", deg: 135 }}
+          >
             Create Account
-          </Text>
-          <Text size="sm" c="dimmed">
-            Join our photo gallery community
-          </Text>
-        </div>
+          </Button>
+        </Stack>
+      </form>
 
-        {actionData?.error && (
-          <Alert icon={<FiAlertCircle />} color="red">
-            {actionData.error}
-          </Alert>
-        )}
+      <Divider label="OR" labelPosition="center" />
 
-        <Form method="post" action="/api/auth/register">
-          <Stack gap="md">
-            {/* Name */}
-            <TextInput
-              label="Full Name"
-              name="name"
-              placeholder="John Doe"
-              leftSection={<FiUser size={16} />}
-              disabled={isSubmitting}
-              required
-            />
-
-            {/* Email */}
-            <TextInput
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              leftSection={<FiMail size={16} />}
-              disabled={isSubmitting}
-              required
-            />
-
-            {/* Password */}
-            <PasswordInput
-              label="Password"
-              name="password"
-              placeholder="Create a strong password"
-              leftSection={<FiLock size={16} />}
-              disabled={isSubmitting}
-              required
-            />
-
-            {/* Confirm Password - client-side validation only */}
-            <PasswordInput
-              label="Confirm Password"
-              placeholder="Confirm your password"
-              leftSection={<FiLock size={16} />}
-              disabled={isSubmitting}
-              required
-            />
-
-            {/* Package Selection */}
-            <Select
-              label="Choose Your Package"
-              name="packageType"
-              placeholder="Select package"
-              value={selectedPackage}
-              onChange={(value) => setSelectedPackage(value || "FREE")}
-              leftSection={<FiPackage size={16} />}
-              data={PACKAGES.map((pkg) => ({
-                value: pkg.value,
-                label: pkg.label,
-              }))}
-              disabled={isSubmitting}
-              required
-            />
-
-            {packageInfo && (
-              <Alert icon={<FiInfo />} color="blue">
-                <Text size="sm" fw={500}>
-                  {packageInfo.label}
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {packageInfo.description}
-                </Text>
-              </Alert>
-            )}
-
-            <Button type="submit" fullWidth loading={isSubmitting}>
-              Create Account
-            </Button>
-          </Stack>
-        </Form>
-
-        <Divider label="OR" labelPosition="center" />
-
-        <Group justify="center" gap="xs">
-          <Text size="sm" c="dimmed">
-            Already have an account?
-          </Text>
-          <Anchor size="sm" onClick={onSwitchToLogin}>
-            Sign In
-          </Anchor>
-        </Group>
-      </Stack>
+      <Group justify="center" gap="xs">
+        <Text size="sm" c="dimmed">Already have an account?</Text>
+        <Anchor size="sm" onClick={onSwitchToLogin} style={{ color: "#a78bfa" }}>
+          Sign In
+        </Anchor>
+      </Group>
+    </Stack>
   );
 }
