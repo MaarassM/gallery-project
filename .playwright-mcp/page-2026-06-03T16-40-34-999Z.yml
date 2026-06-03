@@ -1,0 +1,91 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "Gallery" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]:
+          - img [ref=e8]
+          - paragraph [ref=e11]: Gallery
+      - generic [ref=e12]:
+        - link "Browse" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e16]
+            - generic [ref=e19]: Browse
+        - link "Sign In" [ref=e20] [cursor=pointer]:
+          - /url: /auth
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e26]: Sign In
+  - main [ref=e27]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - img [ref=e32]
+        - heading "Gallery" [level=2] [ref=e35]
+        - paragraph [ref=e36]: Your personal photo collection
+      - generic [ref=e38]:
+        - tablist [ref=e39]:
+          - tab "Sign In" [ref=e40] [cursor=pointer]:
+            - img [ref=e42]
+            - generic [ref=e45]: Sign In
+          - tab "Register" [active] [selected] [ref=e46] [cursor=pointer]:
+            - img [ref=e48]
+            - generic [ref=e51]: Register
+        - tabpanel "Register" [ref=e85]:
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - paragraph [ref=e88]: Create Account
+              - paragraph [ref=e89]: Join our photo gallery community
+            - generic [ref=e91]:
+              - generic [ref=e92]:
+                - generic [ref=e93]: Full Name *
+                - generic [ref=e94]:
+                  - img [ref=e96]
+                  - textbox "Full Name" [ref=e99]:
+                    - /placeholder: John Doe
+              - generic [ref=e100]:
+                - generic [ref=e101]: Email *
+                - generic [ref=e102]:
+                  - img [ref=e104]
+                  - textbox "Email" [ref=e107]:
+                    - /placeholder: your@email.com
+              - generic [ref=e108]:
+                - generic [ref=e109]: Password *
+                - generic [ref=e110]:
+                  - generic:
+                    - img
+                  - textbox "Password" [ref=e112]:
+                    - /placeholder: Create a strong password
+                  - button [ref=e114] [cursor=pointer]:
+                    - img [ref=e116]
+              - generic [ref=e118]:
+                - generic [ref=e119]: Confirm Password
+                - generic [ref=e120]:
+                  - generic:
+                    - img
+                  - textbox "Confirm Password" [ref=e122]:
+                    - /placeholder: Confirm your password
+                  - button [ref=e124] [cursor=pointer]:
+                    - img [ref=e126]
+              - generic [ref=e128]:
+                - generic [ref=e129]: Choose Your Package
+                - generic [ref=e130]:
+                  - img [ref=e132]
+                  - textbox "Choose Your Package" [ref=e136] [cursor=pointer]:
+                    - /placeholder: Select package
+                    - text: Free Tier
+                  - generic:
+                    - img
+              - alert [ref=e137]:
+                - generic [ref=e138]:
+                  - img [ref=e140]
+                  - generic [ref=e143]:
+                    - paragraph [ref=e144]: Free Tier
+                    - paragraph [ref=e145]: 10 photos/month, 5MB max, 1GB storage
+              - button "Create Account" [ref=e146] [cursor=pointer]:
+                - generic [ref=e148]: Create Account
+            - separator [ref=e149]:
+              - generic [ref=e150]: OR
+            - generic [ref=e151]:
+              - paragraph [ref=e152]: Already have an account?
+              - generic [ref=e153] [cursor=pointer]: Sign In

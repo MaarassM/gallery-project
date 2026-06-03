@@ -1,0 +1,63 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link "Gallery" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]:
+          - img [ref=e8]
+          - paragraph [ref=e11]: Gallery
+      - generic [ref=e12]:
+        - link "Browse" [ref=e13] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e14]:
+            - img [ref=e16]
+            - generic [ref=e19]: Browse
+        - link "Sign In" [ref=e20] [cursor=pointer]:
+          - /url: /auth
+          - generic [ref=e21]:
+            - img [ref=e23]
+            - generic [ref=e26]: Sign In
+  - main [ref=e27]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - img [ref=e32]
+        - heading "Gallery" [level=2] [ref=e35]
+        - paragraph [ref=e36]: Your personal photo collection
+      - generic [ref=e38]:
+        - tablist [ref=e39]:
+          - tab "Sign In" [selected] [ref=e40] [cursor=pointer]:
+            - img [ref=e42]
+            - generic [ref=e45]: Sign In
+          - tab "Register" [ref=e46] [cursor=pointer]:
+            - img [ref=e48]
+            - generic [ref=e51]: Register
+        - tabpanel "Sign In" [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - paragraph [ref=e55]: Welcome Back
+              - paragraph [ref=e56]: Sign in to your account to continue
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - generic [ref=e60]: Email *
+                - generic [ref=e61]:
+                  - img [ref=e63]
+                  - textbox "Email" [ref=e66]:
+                    - /placeholder: your@gallery.com
+                    - text: testlive@gallery.com
+              - generic [ref=e67]:
+                - generic [ref=e68]: Password *
+                - generic [ref=e69]:
+                  - generic:
+                    - img
+                  - textbox "Password" [ref=e71]:
+                    - /placeholder: Enter your password
+                    - text: test1234
+                  - button [ref=e73] [cursor=pointer]:
+                    - img [ref=e75]
+              - button "Sign In" [ref=e77] [cursor=pointer]:
+                - generic [ref=e79]: Sign In
+            - separator [ref=e80]:
+              - generic [ref=e81]: OR
+            - generic [ref=e82]:
+              - paragraph [ref=e83]: Don't have an account?
+              - generic [ref=e84] [cursor=pointer]: Register
