@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { auth } from "~/lib/auth/config";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 export async function action({ request }: ActionFunctionArgs) {
   console.log("[Better-Auth Handler] Handling action:", request.method, request.url);
@@ -22,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
         try {
           const data = await response.clone().json();
           if (data && data.user) {
-            await AuditService.log({
+            await auditService.log({
               userId: data.user.id,
               userEmail: data.user.email,
               userRole: data.user.role || "REGISTERED",
@@ -35,7 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
           console.error("[Better-Auth Handler] Error logging success:", e);
         }
       } else {
-        await AuditService.log({
+        await auditService.log({
           userEmail: email,
           userRole: "ANONYMOUS",
           action: "LOGIN_FAILED",

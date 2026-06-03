@@ -1,8 +1,8 @@
 import type { ActionFunctionArgs } from "react-router";
 import { PhotoRepository } from "~/modules/photos/repositories/photo-repository";
-import { ImageProcessingService } from "~/modules/images/services/image-processing-service";
+import { imageProcessingService } from "~/modules/images/services/image-processing-service";
 import { PackageService } from "~/modules/packages/services/package-service";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
 import { readFile } from "node:fs/promises";
 
@@ -41,7 +41,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const canApplyFilters = await PackageService.canApplyFilters(user.id);
 
     if (!canApplyFilters && (filters.length > 0 || resize || format)) {
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email,
         userRole: (user as any).role || "REGISTERED",
@@ -74,7 +74,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const originalBuffer = await readFile(photo.storagePath);
 
     // Process image with requested options
-    const processed = await ImageProcessingService.processDownload(
+    const processed = await imageProcessingService.processDownload(
       originalBuffer,
       photo.originalName,
       { resize, filters, format }
@@ -84,7 +84,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await photoRepository.incrementDownloadCount(photoId);
 
     // Log download
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email,
       userRole: (user as any).role || "REGISTERED",
