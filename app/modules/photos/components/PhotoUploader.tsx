@@ -165,7 +165,7 @@ export function PhotoUploader({ onSuccess }: PhotoUploaderProps) {
               accept="image/png,image/jpeg,image/bmp,image/webp"
             >
               {(props) => (
-                <Button {...props} variant="light" disabled={uploading}>
+                <Button {...props} type="button" variant="light" disabled={uploading}>
                   {file ? "Change File" : "Select File"}
                 </Button>
               )}
