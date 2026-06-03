@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { PhotoRepository } from "~/modules/photos/repositories/photo-repository";
 import { PackageService } from "~/modules/packages/services/package-service";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
 import { readFile } from "node:fs/promises";
 
@@ -36,7 +36,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const canDownload = await PackageService.canDownloadOriginal(user.id);
 
     if (!canDownload) {
-      await AuditService.log({
+      await auditService.log({
         userId: user.id,
         userEmail: user.email,
         userRole: (user as any).role || "REGISTERED",
@@ -60,7 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     await photoRepository.incrementDownloadCount(photoId);
 
     // Log download
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email,
       userRole: (user as any).role || "REGISTERED",

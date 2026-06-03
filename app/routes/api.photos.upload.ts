@@ -1,9 +1,9 @@
 import type { ActionFunctionArgs } from "react-router";
 import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
 import { PhotoRepository } from "~/modules/photos/repositories/photo-repository";
-import { ImageProcessingService } from "~/modules/images/services/image-processing-service";
+import { imageProcessingService } from "~/modules/images/services/image-processing-service";
 import { PackageService } from "~/modules/packages/services/package-service";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 
 const photoRepository = new PhotoRepository();
 
@@ -61,7 +61,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Process image
-    const processed = await ImageProcessingService.processUpload(
+    const processed = await imageProcessingService.processUpload(
       buffer,
       file.name,
       processingOptions
@@ -96,7 +96,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await PackageService.trackUpload(user.id, processed.metadata.size / 1024 / 1024);
 
     // Audit log
-    await AuditService.log({
+    await auditService.log({
       userId: user.id,
       userEmail: user.email,
       userRole: (user as any).role || "REGISTERED",

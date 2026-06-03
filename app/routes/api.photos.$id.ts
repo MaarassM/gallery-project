@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { PhotoRepository } from "~/modules/photos/repositories/photo-repository";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import { auth } from "~/lib/auth/config";
 import fs from "fs/promises";
 import path from "path";
@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     // Log view action
     const session = await auth.api.getSession({ headers: request.headers });
-    await AuditService.log({
+    await auditService.log({
       userId: session?.user?.id,
       userEmail: session?.user?.email || "anonymous",
       userRole: (session?.user as any)?.role || "ANONYMOUS",
@@ -111,7 +111,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await photoRepository.delete(photoId);
 
     // Log delete action
-    await AuditService.log({
+    await auditService.log({
       userId: session.user.id,
       userEmail: session.user.email || "unknown",
       userRole: userRole,

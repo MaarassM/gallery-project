@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
 import { auth } from "~/lib/auth/config";
 import { prisma } from "~/lib/db/client";
-import { AuditService } from "~/modules/audit/services/audit-service";
+import { auditService } from "~/modules/audit/services/audit-service";
 import { PackageType, UserRole } from "@prisma/client";
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -64,7 +64,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     // Log admin action
-    await AuditService.log({
+    await auditService.log({
       userId: session.user.id,
       userEmail: session.user.email,
       userRole: adminUser.role,
