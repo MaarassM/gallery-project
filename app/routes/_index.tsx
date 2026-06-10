@@ -22,7 +22,7 @@ import {
 } from "~/modules/photos/components/FilterPanel";
 import { FiHome, FiUpload, FiSearch, FiAlertCircle } from "react-icons/fi";
 import { PhotoRepository } from "~/modules/photos/repositories/photo-repository";
-import { auth } from "~/lib/auth/config";
+import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
 
 const photoRepository = new PhotoRepository();
 
@@ -38,8 +38,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const photos = await photoRepository.findMany({ limit: 20, offset: 0 });
 
     // Get user session
-    const session = await auth.api.getSession({ headers: request.headers });
-    const userRole = (session?.user as any)?.role || null;
+    const cookies = parseCookies(request.headers.get("cookie"));
+    const user = await getSessionUser(cookies.session ?? null);
+    const userRole = user?.role || null;
 
     return {
       photos: photos.map((photo: any) => ({

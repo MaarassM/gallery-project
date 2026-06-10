@@ -4,7 +4,6 @@ export default [
   index("routes/_index.tsx"),
   route("auth", "routes/auth.tsx"),
   route("admin", "routes/admin.tsx"),
-  route("test", "routes/test.tsx"),
 
   // API Routes - Photos
   route("api/photos/upload", "routes/api.photos.upload.ts"),

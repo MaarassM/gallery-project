@@ -1,5 +1,5 @@
+import bcrypt from "bcryptjs";
 import { prisma } from "../app/lib/db/client";
-import { auth } from "../app/lib/auth/config";
 
 async function createTestUser() {
   const email = "test@gallery.com";
@@ -29,36 +29,35 @@ async function createTestUser() {
       throw new Error("FREE package not found in database");
     }
 
-    // Create user with Better-Auth
-    const result = await auth.api.signUpEmail({
-      body: {
-        email,
-        password,
-        name,
-      },
-    });
+    // Create user + credential account (same flow as the register endpoint)
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!result || !result.user) {
-      throw new Error("Failed to create user with Better-Auth");
-    }
-
-    // Update user with package
-    const updatedUser = await prisma.user.update({
-      where: { id: result.user.id },
+    const user = await prisma.user.create({
       data: {
+        email,
+        name,
         role: "REGISTERED",
         packageType: "FREE",
         packageId: freePackage.id,
       },
     });
 
+    await prisma.account.create({
+      data: {
+        userId: user.id,
+        providerId: "credential",
+        accountId: user.id,
+        password: hashedPassword,
+      },
+    });
+
     console.log(`✅ Test user created successfully!`);
     console.log(`\nUser details:`);
-    console.log(`ID: ${updatedUser.id}`);
-    console.log(`Email: ${updatedUser.email}`);
-    console.log(`Name: ${updatedUser.name}`);
-    console.log(`Role: ${updatedUser.role}`);
-    console.log(`Package: ${updatedUser.packageType}`);
+    console.log(`ID: ${user.id}`);
+    console.log(`Email: ${user.email}`);
+    console.log(`Name: ${user.name}`);
+    console.log(`Role: ${user.role}`);
+    console.log(`Package: ${user.packageType}`);
     console.log(`\nLogin credentials:`);
     console.log(`Email: ${email}`);
     console.log(`Password: ${password}`);

@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { PhotoRepository } from "~/modules/photos/repositories/photo-repository";
 import { auditService } from "~/modules/audit/services/audit-service";
-import { auth } from "~/lib/auth/config";
+import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
 import fs from "fs/promises";
 import path from "path";
 
@@ -27,11 +27,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     await photoRepository.incrementViewCount(photoId);
 
     // Log view action
-    const session = await auth.api.getSession({ headers: request.headers });
+    const cookies = parseCookies(request.headers.get("cookie"));
+    const user = await getSessionUser(cookies.session ?? null);
     await auditService.log({
-      userId: session?.user?.id,
-      userEmail: session?.user?.email || "anonymous",
-      userRole: (session?.user as any)?.role || "ANONYMOUS",
+      userId: user?.id,
+      userEmail: user?.email || "anonymous",
+      userRole: user?.role || "ANONYMOUS",
       action: "VIEW_PHOTO",
       resource: "Photo",
       resourceId: photoId,
@@ -82,12 +83,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     // Check authentication
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session?.user) {
+    const cookies = parseCookies(request.headers.get("cookie"));
+    const user = await getSessionUser(cookies.session ?? null);
+    if (!user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userRole = (session.user as any)?.role;
+    const userRole = user.role;
     if (userRole !== "ADMINISTRATOR") {
       return Response.json({ error: "Forbidden - Admin only" }, { status: 403 });
     }
@@ -112,8 +114,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     // Log delete action
     await auditService.log({
-      userId: session.user.id,
-      userEmail: session.user.email || "unknown",
+      userId: user.id,
+      userEmail: user.email || "unknown",
       userRole: userRole,
       action: "DELETE_PHOTO",
       resource: "Photo",

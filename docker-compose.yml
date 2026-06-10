@@ -24,8 +24,6 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://gallery:gallery_password@postgres:5432/gallery_db?sslmode=disable"
-      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:-gallery-secret-key-change-in-production-minimum-32-chars}"
-      BETTER_AUTH_URL: "${BETTER_AUTH_URL:-http://localhost:3000}"
       STORAGE_PATH: "/app/storage"
       NODE_ENV: "production"
     depends_on:
@@ -44,19 +42,6 @@ services:
     depends_on:
       - app
 
-  grafana:
-    image: grafana/grafana:latest
-    container_name: gallery_grafana
-    ports:
-      - "3001:3000"
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-    depends_on:
-      - prometheus
-
 volumes:
   postgres_data:
   gallery_storage:
-  grafana_data:

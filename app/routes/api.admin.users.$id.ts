@@ -1,23 +1,19 @@
 import type { ActionFunctionArgs } from "react-router";
-import { auth } from "~/lib/auth/config";
+import { getSessionUser, parseCookies } from "~/lib/auth/simple-auth";
 import { prisma } from "~/lib/db/client";
 import { auditService } from "~/modules/audit/services/audit-service";
 import { PackageType, UserRole } from "@prisma/client";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const cookies = parseCookies(request.headers.get("cookie"));
+    const adminUser = await getSessionUser(cookies.session ?? null);
 
-    if (!session?.user) {
+    if (!adminUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if user is admin
-    const adminUser = await prisma.user.findUnique({
-      where: { id: session.user.id },
-    });
-
-    if (!adminUser || adminUser.role !== "ADMINISTRATOR") {
+    if (adminUser.role !== "ADMINISTRATOR") {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -65,8 +61,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     // Log admin action
     await auditService.log({
-      userId: session.user.id,
-      userEmail: session.user.email,
+      userId: adminUser.id,
+      userEmail: adminUser.email,
       userRole: adminUser.role,
       action: "UPDATE_USER",
       resource: "User",
