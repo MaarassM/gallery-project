@@ -72,6 +72,20 @@ body::after {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+/* Modal — Paper defaultProps (theme) leak a near-transparent glass bg into
+   Modal.Content; restore an opaque dark surface so content stays readable */
+.mantine-Modal-content {
+  background: rgba(22, 19, 49, 0.97) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.mantine-Modal-header {
+  background: rgba(22, 19, 49, 0.97) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
 /* Photo masonry grid */
 .photo-masonry {
   column-count: 4;

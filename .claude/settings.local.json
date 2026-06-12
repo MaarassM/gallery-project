@@ -5,7 +5,25 @@
       "Bash(curl:*)",
       "Bash(jq:*)",
       "Bash(npx ts-node:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(node -e \"require\\('pptxgenjs'\\); console.log\\('pptxgenjs OK'\\)\")",
+      "Bash(python3 -c \"import markitdown; print\\('markitdown OK'\\)\")",
+      "Bash(mkdir -p /tmp/gallery-deck)",
+      "Bash(npm init *)",
+      "Bash(node -e \"require\\('/tmp/gallery-deck/node_modules/pptxgenjs'\\); console.log\\('pptxgenjs OK'\\)\")",
+      "Bash(brew --version)",
+      "Read(//Applications/LibreOffice.app/Contents/MacOS/**)",
+      "Bash(brew install *)",
+      "Bash(node assets.js)",
+      "Bash(node deck.js /Users/mihaelmaras/Projects-TeleSystems/gallery/docs/Gallery-Defense.pptx)",
+      "Bash(/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to pdf --outdir /tmp/gallery-deck /Users/mihaelmaras/Projects-TeleSystems/gallery/docs/Gallery-Defense.pptx)",
+      "Bash(rm -f /tmp/gallery-deck/slide-*.jpg)",
+      "Bash(pdftoppm -jpeg -r 120 /tmp/gallery-deck/Gallery-Defense.pdf /tmp/gallery-deck/slide)",
+      "Read(//Applications/**)",
+      "Bash(python3 -m pip install --quiet \"markitdown[pptx]\")",
+      "Bash(python3 -m markitdown /Users/mihaelmaras/Projects-TeleSystems/gallery/docs/Gallery-Defense.pptx)",
+      "Bash(grep -iE \"\\\\bx{3,}\\\\b|lorem|ipsum|\\\\bTODO|\\\\[insert|undefined|NaN\")",
+      "Bash(cd /tmp/gallery-deck && /Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to pdf --outdir /tmp/gallery-deck /Users/mihaelmaras/Projects-TeleSystems/gallery/docs/Gallery-Defense.pptx 2>&1 | tail -1; rm -f /tmp/gallery-deck/slide-*.jpg; pdftoppm -jpeg -r 120 /tmp/gallery-deck/Gallery-Defense.pdf /tmp/gallery-deck/slide && ls -1 /tmp/gallery-deck/slide-*.jpg)"
     ]
   }
 }
