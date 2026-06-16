@@ -54,3 +54,11 @@ export const activeImageProcessing = new Gauge({
   help: "Number of image processing operations currently in progress",
   registers: [registry],
 });
+
+// 8. CUSTOM: Total photos currently stored — refreshed from the DB on each
+// scrape, so it always mirrors the real count in the UI and survives restarts.
+export const photosInDb = new Gauge({
+  name: "photos_in_db",
+  help: "Current total number of photos stored in the database",
+  registers: [registry],
+});
