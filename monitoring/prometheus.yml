@@ -5,6 +5,6 @@ global:
 scrape_configs:
   - job_name: "gallery-app"
     static_configs:
-      - targets: ["host.docker.internal:5173"]
+      - targets: ["app:3000"]
     metrics_path: "/api/metrics"
     scrape_interval: 10s

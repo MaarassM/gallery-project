@@ -4,6 +4,7 @@ import { PhotoRepository } from "~/modules/photos/repositories/photo-repository"
 import { imageProcessingService } from "~/modules/images/services/image-processing-service";
 import { PackageService } from "~/modules/packages/services/package-service";
 import { auditService } from "~/modules/audit/services/audit-service";
+import { photosUploadedTotal } from "~/lib/metrics/metrics";
 
 const photoRepository = new PhotoRepository();
 
@@ -94,6 +95,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
     // Track usage
     await PackageService.trackUpload(user.id, processed.metadata.size / 1024 / 1024);
+
+    // Increment Prometheus counter, segmented by package type
+    photosUploadedTotal.inc({ package_type: userPackage.type ?? "unknown" });
 
     // Audit log
     await auditService.log({

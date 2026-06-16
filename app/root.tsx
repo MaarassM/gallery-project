@@ -53,9 +53,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getSessionUser(sessionToken);
   console.log("Session user:", user?.email || "NO SESSION");
 
-  // If no session and not on auth/api pages, redirect to auth
-  const isPublicPath = url.pathname === "/auth" || url.pathname.startsWith("/api/");
-  if (!user && !isPublicPath) {
+  // If no session and not on auth page, redirect to auth
+  if (!user && url.pathname !== "/auth") {
     console.log("No session, redirecting to /auth");
     return redirect("/auth");
   }

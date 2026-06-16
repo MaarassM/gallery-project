@@ -3,6 +3,7 @@ node_modules
 .github
 .claude
 storage
+public/storage
 prisma/dev.db
 tests
 docs

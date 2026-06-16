@@ -25,7 +25,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 
   const storagePath = process.env.STORAGE_PATH || "./storage";
-  const fullPath = path.join(process.cwd(), storagePath, normalizedPath);
+  // Resolve base dir first so an absolute STORAGE_PATH (e.g. "/app/storage" in
+  // Docker) is used as-is instead of being concatenated onto process.cwd().
+  const baseDir = path.resolve(process.cwd(), storagePath);
+  const fullPath = path.join(baseDir, normalizedPath);
 
   try {
     const file = await fs.readFile(fullPath);
