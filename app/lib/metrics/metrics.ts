@@ -20,18 +20,10 @@ export const httpRequestDurationMs = new Histogram({
   registers: [registry],
 });
 
-// 3. Error rate — errors by type
-export const httpErrorsTotal = new Counter({
-  name: "http_errors_total",
-  help: "Total HTTP error responses",
-  labelNames: ["method", "path", "error_type"],
-  registers: [registry],
-});
-
-// 4. Memory + process metrics (GC, CPU, memory) — via collectDefaultMetrics
+// 3. Memory + process metrics (GC, CPU, memory) — via collectDefaultMetrics
 collectDefaultMetrics({ register: registry });
 
-// 5. DB query duration — tracks Prisma query latency
+// 4. DB query duration — tracks Prisma query latency (wired in lib/db/client.ts)
 export const dbQueryDurationMs = new Histogram({
   name: "db_query_duration_ms",
   help: "Prisma database query duration in milliseconds",
@@ -40,7 +32,7 @@ export const dbQueryDurationMs = new Histogram({
   registers: [registry],
 });
 
-// 6. CUSTOM: Photos uploaded total — domain-specific, labeled by package type
+// 5. CUSTOM: Photos uploaded total — domain-specific, labeled by package type
 export const photosUploadedTotal = new Counter({
   name: "photos_uploaded_total",
   help: "Total photos uploaded, segmented by user package type",
@@ -48,14 +40,14 @@ export const photosUploadedTotal = new Counter({
   registers: [registry],
 });
 
-// 7. CUSTOM: Active image processing operations — shows concurrency
+// 6. CUSTOM: Active image processing operations — shows concurrency
 export const activeImageProcessing = new Gauge({
   name: "active_image_processing",
   help: "Number of image processing operations currently in progress",
   registers: [registry],
 });
 
-// 8. CUSTOM: Total photos currently stored — refreshed from the DB on each
+// 7. CUSTOM: Total photos currently stored — refreshed from the DB on each
 // scrape, so it always mirrors the real count in the UI and survives restarts.
 export const photosInDb = new Gauge({
   name: "photos_in_db",
