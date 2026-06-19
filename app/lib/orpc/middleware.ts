@@ -5,15 +5,21 @@ import type { ORPCContext } from "./context";
 // Svaki middleware može obraditi request i proslijediti sljedećem: publicProcedure -> authedProcedure -> adminProcedure
 // Chain: Parsiraj request -> Provjeri auth -> Provjeri ulogu -> Izvrši handler
 
+// Context available inside authed/admin handlers: user is guaranteed non-null
+// because the auth middleware throws before the handler runs.
+export type AuthedContext = ORPCContext & {
+  user: NonNullable<ORPCContext["user"]>;
+};
+
 // Bazni procedure type
-export type Procedure<TInput = any, TOutput = any> = {
-  input: (schema: any) => Procedure<TInput, TOutput>;
+export type Procedure<TInput = any, TOutput = any, TContext = ORPCContext> = {
+  input: (schema: any) => Procedure<TInput, TOutput, TContext>;
   handler: (
-    fn: (args: { input: TInput; context: ORPCContext }) => Promise<TOutput>
-  ) => Procedure<TInput, TOutput>;
+    fn: (args: { input: TInput; context: TContext }) => Promise<TOutput>
+  ) => Procedure<TInput, TOutput, TContext>;
   _inputSchema?: any;
-  _handler?: (args: { input: TInput; context: ORPCContext }) => Promise<TOutput>;
-  use: (middleware: any) => Procedure<TInput, TOutput>;
+  _handler?: (args: { input: TInput; context: TContext }) => Promise<TOutput>;
+  use: (middleware: any) => Procedure<TInput, TOutput, TContext>;
   _middleware?: any[];
 };
 
@@ -58,15 +64,15 @@ export const authedProcedure = createProcedure().use(
       },
     };
   }
-);
+) as unknown as Procedure<any, any, AuthedContext>;
 
 // Admin procedura (zahtijeva admin ulogu)
 export const adminProcedure = authedProcedure.use(
-  async ({ context }: { context: ORPCContext & { user: any } }) => {
+  async ({ context }: { context: AuthedContext }) => {
     if (context.user?.role !== "ADMINISTRATOR") {
       throw new Error("Forbidden - Admin access required");
     }
 
     return { context };
   }
-);
+) as unknown as Procedure<any, any, AuthedContext>;

@@ -56,9 +56,8 @@ export const register = publicProcedure
       await prisma.account.create({
         data: {
           userId: user.id,
-          type: "credentials",
-          provider: "credentials",
-          providerAccountId: user.email,
+          providerId: "credential",
+          accountId: user.email,
         },
       });
 

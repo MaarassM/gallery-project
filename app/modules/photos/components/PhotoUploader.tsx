@@ -20,7 +20,6 @@ import {
   Progress,
 } from "@mantine/core";
 import { useForm } from "@tanstack/react-form";
-import { valibotValidator } from "@tanstack/valibot-form-adapter";
 import * as v from "valibot";
 import { notifications } from "@mantine/notifications";
 
@@ -127,7 +126,6 @@ export function PhotoUploader({ onSuccess }: PhotoUploaderProps) {
         setProgress(0);
       }
     },
-    validatorAdapter: valibotValidator(),
   });
 
   const handleFileChange = (selectedFile: File | null) => {

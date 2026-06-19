@@ -1,16 +1,28 @@
-import { ORPCClient } from "@orpc/client";
 import type { AppRouter } from "./router";
 
 /**
  * ORPC Client
  *
- * Type-safe client for making RPC calls to the server
+ * Thin fetch-based client for calling server procedures exposed at
+ * /api/orpc/*. Procedures are dispatched by dot-path (e.g. "photos.list"),
+ * matching the navigation logic in the api.orpc.$ route handler.
  */
 
-export const orpcClient = new ORPCClient<AppRouter>({
+export type { AppRouter };
+
+export const orpcClient = {
   baseURL: "/api/orpc",
-  fetch: async (url, options) => {
-    const response = await fetch(url, options);
-    return response;
+  async call<TResult = unknown>(path: string, input?: unknown): Promise<TResult> {
+    const response = await fetch(`/api/orpc/${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input ?? {}),
+    });
+
+    if (!response.ok) {
+      throw new Error(`ORPC request failed: ${response.status}`);
+    }
+
+    return (await response.json()) as TResult;
   },
-});
+};

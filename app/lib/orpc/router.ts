@@ -1,5 +1,3 @@
-import { os } from "@orpc/server";
-
 import { login } from "~/modules/auth/procedures/login";
 import { register } from "~/modules/auth/procedures/register";
 import { logout } from "~/modules/auth/procedures/logout";
@@ -16,31 +14,34 @@ import { updateUser } from "~/modules/admin/procedures/update-user";
 import { getStatistics } from "~/modules/admin/procedures/get-statistics";
 import { getAuditLogs } from "~/modules/admin/procedures/get-audit-logs";
 
-export const appRouter = os.router({
+// Nested map of the application's procedures. Procedures are built with the
+// custom middleware chain in ~/lib/orpc/middleware, so the router is a plain
+// object navigated by path in the /api/orpc route handler.
+export const appRouter = {
   // Authentication routes
-  auth: os.router({
+  auth: {
     login,
     register,
     logout,
-  }),
+  },
 
   // Photo routes
-  photos: os.router({
+  photos: {
     upload: uploadPhoto,
     list: getPhotos,
     getById: getPhotoById,
     search: searchPhotos,
     downloadOriginal,
     downloadProcessed,
-  }),
+  },
 
   // Admin routes
-  admin: os.router({
+  admin: {
     getUsers,
     updateUser,
     getStatistics,
     getAuditLogs,
-  }),
-});
+  },
+};
 
 export type AppRouter = typeof appRouter;

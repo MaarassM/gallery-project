@@ -8,7 +8,9 @@ import { HandleErrors } from "~/aspects";
 export type AuditLogInput = {
   userId?: string;
   userEmail?: string;
-  userRole: UserRole;
+  // Accept the loose role shape coming from the auth session (string | null |
+  // undefined) and normalize to a valid UserRole before persisting.
+  userRole: UserRole | string | null | undefined;
   action: string;
   resource?: string;
   resourceId?: string;
@@ -26,7 +28,7 @@ export class AuditService {
       data: {
         userId: input.userId,
         userEmail: input.userEmail,
-        userRole: input.userRole,
+        userRole: (input.userRole ?? "ANONYMOUS") as UserRole,
         action: input.action,
         resource: input.resource,
         resourceId: input.resourceId,

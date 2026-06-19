@@ -1,7 +1,20 @@
 import { prisma } from "~/lib/db/client";
-import type { Photo, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { Photo } from "@prisma/client";
 import { Log, Cache } from "~/aspects";
 import { buildSearchWhere } from "../utils/search-criteria-builder";
+
+// Shared include used by every read query so the relations (author + hashtags)
+// are present both at runtime AND in the inferred return type.
+const photoInclude = {
+  user: { select: { id: true, name: true, email: true } },
+  hashtags: { include: { hashtag: true } },
+} satisfies Prisma.PhotoInclude;
+
+// Photo enriched with its author and hashtag relations.
+export type PhotoWithRelations = Prisma.PhotoGetPayload<{
+  include: typeof photoInclude;
+}>;
 
 // REPOSITORY PATTERN: Enkapsulira sve operacije nad bazom podataka za Photo entitet.
 // Pruža interface sličan kolekciji (create, findById, findMany, search, update, delete).
@@ -35,13 +48,15 @@ export type SearchCriteria = {
 };
 
 export class PhotoRepository {
-  async create(input: CreatePhotoInput): Promise<Photo> {
-    const { hashtags, ...photoData } = input;
+  async create(input: CreatePhotoInput): Promise<PhotoWithRelations> {
+    const { hashtags, processingOptions, ...photoData } = input;
 
     // Kreiraj fotografiju s hashtagovima
     const photo = await prisma.photo.create({
       data: {
         ...photoData,
+        // Prisma requires Prisma.JsonNull (not JS null) for nullable Json fields.
+        processingOptions: processingOptions ?? Prisma.JsonNull,
         hashtags: hashtags
           ? {
               create: hashtags.map((tagName) => ({
@@ -55,54 +70,39 @@ export class PhotoRepository {
             }
           : undefined,
       },
-      include: {
-        hashtags: {
-          include: {
-            hashtag: true,
-          },
-        },
-      },
+      include: photoInclude,
     });
 
     return photo;
   }
 
-  async findById(id: string): Promise<Photo | null> {
+  async findById(id: string): Promise<PhotoWithRelations | null> {
     return await prisma.photo.findUnique({
       where: { id },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        hashtags: { include: { hashtag: true } },
-      },
+      include: photoInclude,
     });
   }
 
-  async findMany(options: { limit?: number; offset?: number; userId?: string }): Promise<Photo[]> {
+  async findMany(options: { limit?: number; offset?: number; userId?: string }): Promise<PhotoWithRelations[]> {
     return await prisma.photo.findMany({
       where: options.userId ? { userId: options.userId } : undefined,
       take: options.limit || 10,
       skip: options.offset || 0,
       orderBy: { uploadedAt: "desc" },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        hashtags: { include: { hashtag: true } },
-      },
+      include: photoInclude,
     });
   }
 
   @Log()
   @Cache(30_000)
-  async search(criteria: SearchCriteria): Promise<Photo[]> {
+  async search(criteria: SearchCriteria): Promise<PhotoWithRelations[]> {
     // FP: buildSearchWhere composes pure filter functions instead of imperative if/else
     return await prisma.photo.findMany({
       where: buildSearchWhere(criteria),
       take: criteria.limit ?? 50,
       skip: criteria.offset ?? 0,
       orderBy: { uploadedAt: "desc" },
-      include: {
-        user: { select: { id: true, name: true, email: true } },
-        hashtags: { include: { hashtag: true } },
-      },
+      include: photoInclude,
     });
   }
 

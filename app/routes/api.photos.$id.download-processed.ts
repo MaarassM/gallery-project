@@ -100,7 +100,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const mimeType = `image/${extension}`;
     const filename = photo.originalName.replace(/\.[^.]+$/, `.${extension}`);
 
-    return new Response(processed.buffer, {
+    return new Response(new Uint8Array(processed.buffer), {
       headers: {
         "Content-Type": mimeType,
         "Content-Disposition": `attachment; filename="${filename}"`,

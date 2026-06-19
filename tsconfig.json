@@ -1,8 +1,8 @@
 {
-  "include": ["app/**/*", "server/**/*"],
+  "include": ["app/**/*", "server/**/*", "tests/**/*", "*.config.ts"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@react-router/node", "vite/client"],
+    "types": ["@react-router/node", "vite/client", "vitest/globals"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",

@@ -118,7 +118,7 @@ export const downloadProcessed = authedProcedure
           buffer: processed.buffer,
           filename: processed.filename,
           mimeType: processed.mimeType,
-          size: processed.size,
+          size: processed.sizeBytes,
         },
       };
     } catch (error) {

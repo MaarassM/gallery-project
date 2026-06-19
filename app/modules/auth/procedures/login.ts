@@ -49,8 +49,7 @@ export const login = publicProcedure
           packageType: session.user.packageType,
         },
         session: {
-          token: session.session.token,
-          expiresAt: session.session.expiresAt,
+          token: session.token,
         },
       };
     } catch (error) {
